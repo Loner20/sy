@@ -1,0 +1,519 @@
+1
+
+
+
+SUM
+
+
+
+import threading
+def summation(num):
+    print(f'Current thread running is {threading.current_thread().name}')
+    sum=0;
+    for i in range(1,num+1):
+        sum+=i
+    print(f"summation of {num} is {sum}")
+t1=threading.Thread(target=summation,args=(3,),name="t1")
+t2=threading.Thread(target=summation,args=(2,),name="t2")
+
+print(f'Current thread running is {threading.current_thread().name}')
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+print("Done!")
+
+
+
+
+SQUARE
+
+
+
+import threading
+def square(num):
+    print(f"Current thread running is {threading.current_thread().name}")
+    print(f"square of {num} is {num*num}")
+    
+print(f"Current thread running is {threading.current_thread().name}")
+    
+t1=threading.Thread(target=square,args=(10,),name="t1")
+t2=threading.Thread(target=square,args=(20,),name="t2")
+
+t1.start()
+t2.start()
+
+t1.join()
+t2.join()
+print("Done!!!")
+
+
+
+
+PRIME
+
+
+
+import threading
+def showprime(num1,num2):
+    print(f"Following are the prime numbers between {num1} and {num2}")
+    for num in range(num1,num2+1):
+        if num > 1:
+            for i in range(2,num):
+                if (num % i) == 0:
+                    break
+            else:
+                print(num)
+                              
+    
+t1=threading.Thread(target=showprime,args=(10,20),name="t1")
+t2=threading.Thread(target=showprime,args=(50,100),name="t2")
+       
+print(f'Current thread running is {threading.current_thread().name}')
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+print("Done!")
+
+
+
+FIBONACCI
+
+
+
+import threading 
+def showfact(num):   
+    if num < 0: 
+            print("Please enter number great than 1");
+    elif num == 0 or num == 1: 
+            print("Please enter number great than 1");
+    else: 
+        fact = 1      
+    while(num > 1):
+        fact *= num  
+        num -= 1       
+    print(f"The factorial of {num} is {fact}");  
+    print(f"Current Thread runnning is {threading.current_thread().name}") 
+
+t3=threading.Thread(target=showfact,args=(5,),name="t3") 
+t4=threading.Thread(target=showfact,args=(9,),name="t4") 
+print(f"Current Thread running is {threading.current_thread().name}") 
+t3.start()
+t4.start()
+t3.join()
+t4.join() 
+
+
+
+RMI SQRT
+
+
+
+import java.rmi.*;
+interface MethodImpl extends Remote
+{
+double getSqrt(double dbl ) throws RemoteException;
+}
+
+
+
+
+import java.rmi.*;
+import java.rmi.registry.*;
+import java.rmi.server.*;
+public class RMIServer extends UnicastRemoteObject implements MethodImpl
+{
+public RMIServer() throws RemoteException
+{
+System.out.println("The server is instantiated");
+}
+public double getSqrt(double dbl)
+{
+return Math.sqrt(dbl);
+}
+public static void main(String[] arguments)
+{
+try
+{
+RMIServer server = new RMIServer();
+Naming.rebind("//localhost/call1", server);
+}
+catch (Exception exce)
+{
+System.out.println("Error -- " +exce.toString());
+exce.printStackTrace();
+}
+} 
+} 
+
+
+
+import java.rmi.*;
+import java.rmi.registry.*;
+public class RMIClient
+{
+public static void main(String[] arguments)
+{
+try
+{
+MethodImpl mthdIp = (MethodImpl)Naming.lookup("//localhost/call1");
+double dbl = mthdIp.getSqrt(100);
+System.out.println("SQRT:" + dbl);
+}
+catch (Exception exec)
+{
+System.out.println("Error -- " + exec.toString());
+exec.printStackTrace();
+}
+}
+}
+
+
+
+
+RMI FACT
+
+
+
+import java.rmi.*;
+interface MethodImpl extends Remote
+{
+int Integer_factorial(int a) throws RemoteException;
+}
+
+
+
+import java.rmi.*;
+import java.rmi.registry.*;
+import java.rmi.server.*;
+public class RMIServer extends UnicastRemoteObject implements MethodImpl
+{
+public RMIServer() throws RemoteException
+{
+System.out.println("The server is instantiated");
+}
+public static void main(String[] arguments)
+{
+try
+{
+RMIServer server = new RMIServer();
+Naming.rebind("//localhost/call1", server);
+}
+catch (Exception exce)
+{
+System.out.println("Error -- " +exce.toString());
+exce.printStackTrace();
+}
+}
+public int Integer_factorial(int a)
+{
+int i,fact=1;
+for (i=1;i<=a;i++)
+{
+fact=fact*i;
+} 
+return fact;
+}
+}
+
+
+import java.rmi.*;
+import java.rmi.registry.*;
+public class RMIClient
+{
+public static void main(String[] arguments)
+{
+try
+{
+MethodImpl mthdIp = (MethodImpl)Naming.lookup("//localhost/call1");
+int user_input=Integer.parseInt(arguments[0]);
+int fact=mthdIp.Integer_factorial(user_input);
+System.out.println("Factorial of "+ user_input + "is:" + fact);
+}
+catch (Exception exec)
+{
+System.out.println("Error -- " + exec.toString());
+exec.printStackTrace();
+}
+}
+}
+
+
+
+
+BUFFER
+from threading import Thread
+import time
+class buffer:
+    def __init__(self,size):
+        self.size=size
+        self.b=[0]*size
+        self.into=0             
+        self.out=0              
+        self.counter=0
+        
+    def getvalue(self):
+        x=self.b[self.out]
+        self.out=(self.out+1)%self.size
+        self.counter-=1
+        return x
+    
+    def putvalue(self,value):
+        self.b[self.into]=value
+        self.into=(self.into+1) %self.size
+        self.counter+=1
+    
+class Producer(Thread):  
+    def __init__ (self,b):
+        super(Producer,self).__init__() 
+        self.b=b
+        
+    def run(self): 
+        i=0
+        while self.b.counter < self.b.size:
+            i=i+1
+            self.b.putvalue(i)
+            print(f"{i} put in buffer\n")
+            print(f"Buffer contents after production: {self.b.counter}")
+            time.sleep(5)
+            
+class Consumer(Thread):
+    def __init__(self,b):
+        super(Consumer,self).__init__() 
+        self.b=b
+        
+    def run(self):
+        while self.b.counter!=0:
+            value=self.b.getvalue()
+            print(f"{value} consumed from buffer\n")
+            print(f"Buffer contents after consumption: {self.b.counter}\n")
+            time.sleep(10)
+            
+b=buffer(5)
+p=Producer(b)
+c=Consumer(b)
+p.start()
+c.start()
+c.join()
+p.join()
+
+
+
+
+FCFS
+def getwaitingtime(n,bt,at,wt):
+    st=[0]*n
+    for i in range(1,n):
+        st[i]=st[i-1]+bt[i-1]
+        wt[i]=st[i]-at[i]
+def gettat(n,bt,wt,tat):
+    for i in range(n):
+        tat[i]=wt[i]+bt[i]
+def getaverage(n,p,bt,at):
+    wt=[0]*n
+    tat=[0]*n
+    getwaitingtime(n,bt,at,wt)
+    gettat(n,bt,wt,tat)
+    totwt=0
+    tottat=0
+    print("Processes\tBT\tAT\tWT\tTAT")
+    for i in range(n):
+        totwt+=wt[i]
+        tottat+=tat[i]
+        print(f"\tP{p[i]}\t{bt[i]}\t{at[i]}\t{wt[i]}\t{tat[i]}")
+    avgwt=totwt/n
+    avgtat=tottat/n
+    print(f"Average waiting time is: {round(avgwt,2)}")
+    print(f"Average Turnaround time is: {round(avgtat,2)}")      
+n=int(input("Enter the no of processes: "))
+processes=list(map(int,input(f"Enter {n} process numbers seperated by space: ").split()))
+bursttime=list(map(int,input("Enter burst time of each process seperated by space: ").split()))
+arrivaltime=list(map(int,input("Enter arrival time of each process seperated by space: ").split()))
+getaverage(n,processes,bursttime,arrivaltime)
+
+
+
+
+SJF
+def getwt(n,plist):
+    st=[0]*n
+    for i in range(1,n):  
+        st[i]=st[i-1]+plist[i-1][1]
+        plist[i][2]=st[i]
+
+def gettat(n,plist):
+    for i in range(n):
+        plist[i][3]=plist[i][1]+plist[i][2]
+
+def getaverage(n,plist):
+    getwt(n,plist)
+    gettat(n,plist)
+    print("Process\t BT\t WT\t TAT \n")
+    tot_wt=0
+    tot_tat=0
+    for i in range (n):
+        tot_wt+=plist[i][2]
+        tot_tat+=plist[i][3]
+        print(f"P{plist[i][0]}\t{plist[i][1]}\t{plist[i][2]}\t{plist[i][3]}")
+    avg_wt=tot_wt/n
+    avg_tat=tot_tat/n
+    print(f"Average waiting time is {avg_wt}")
+    print(f"Average turn around time is {avg_tat}")
+
+process_list=[]
+n=int(input("Enter the no. of process :"))
+for i in range (n):
+    process=list(map(int,input("Enter process no and burst time seperated by space : ").split()))
+    process.extend([0,0])
+    process_list.append(process)
+process_list=sorted(process_list,key=lambda x:x[1])
+print(process_list)
+getaverage(n,process_list)
+
+
+
+
+SEMAPHORE
+import threading 
+from threading import Thread
+import time
+
+class Buffer():
+    def __init__(self,size):
+        self.size=size
+        self.buf=[0]*size
+        self.into=0
+        self.out=0
+        self.empty=threading.Semaphore(self.size)
+        self.full=threading.Semaphore(0)
+        self.mutex=threading.Semaphore(1)
+        
+    def getvalue(self):
+        x=self.buf[self.out]
+        self.out=(self.out+1)%self.size
+        return x
+    
+    def putvalue(self,value):
+        self.buf[self.into]=value
+        self.into=(self.into+1) %self.size
+        
+class Producer(Thread):  
+    def __init__ (self,b):
+        super(Producer,self).__init__() 
+        self.buf=b
+        
+    def run(self): 
+        i=0
+        while True:
+            i=i+1
+            self.buf.empty.acquire()  
+            self.buf.mutex.acquire()
+            self.buf.putvalue(i)
+            self.buf.mutex.release()   
+            self.buf.full.release()
+            print(f"{i} put in buffer\n")
+            time.sleep(5)
+            
+class Consumer(Thread):
+    def __init__(self,b):
+        super(Consumer,self).__init__()
+        self.buf=b
+        
+    def run(self):
+        while True:
+            self.buf.full.acquire()  
+            self.buf.mutex.acquire()
+            value=self.buf.getvalue()
+            self.buf.mutex.release()   
+            self.buf.empty.release()
+            print(f"{value} is consumed from buffer\n")
+            time.sleep(5)
+
+b=Buffer(5)
+p=Producer(b)
+c=Consumer(b)
+p.start()
+c.start()
+p.join()
+c.join()
+
+
+
+BANKER'S ALGORITHM
+
+
+
+n=int(input("Enter the no. of processes: "))
+m=int(input("Enter the no. of resources: ")) 
+Allocation=[] 
+Max=[] 
+Need=[] 
+Available=[] 
+print("Enter the Allocation Matrix: ") 
+for i in range(n):
+    rowinput=[]     
+    for j in range(m):         
+        x=int(input())         
+        rowinput.append(x)     
+        Allocation.append(rowinput) 
+        
+print("Enter the Max Matrix: ") 
+for i in range(n):     
+    rowinput=[]     
+    for j in range(m):         
+        x=int(input())         
+        rowinput.append(x) 
+    Max.append(rowinput) 
+    
+    
+#Calculate need matrix 
+for i in range(n): 
+    rowinput=[]     
+    for j in range(m):         
+        x=Max[i][j]-Allocation[i][j]         
+        rowinput.append(x) 
+    Need.append(rowinput) 
+
+Resources=[] 
+print("Enter the total resources: ") 
+for i in range(m):
+    x=int(input()) 
+    Resources.append(x) 
+for j in range(m):     
+    x=0     
+    for i in range(n):         
+        x+=Allocation[i][j]     
+    x=Resources[j]-x 
+    Available.append(x) 
+        
+#Safety Algorithmn
+Work=Available.copy() 
+finish=[0]*n 
+Sequence=[] 
+alldone=False 
+attempt=0 
+while alldone==False: 
+    attempt+=1
+    for i in range(n): 
+        if(finish[i]==0) and (Need[i]<=Work):
+            for k in range(m):
+                Work[k]+=Allocation[i][k]
+                finish[i]=1 
+            Sequence.append(i)     
+        for i in range(n):      
+            if(finish[i]==0):
+                break
+            else: 
+                alldone=True 
+        if attempt>2:
+            break
+    
+if alldone==True: 
+    print("System is in Safe State")  
+    print("The sequence is ",Sequence) 
+else:
+    print("System is Unsafe") 
+
+
+
